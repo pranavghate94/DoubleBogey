@@ -25,10 +25,27 @@ namespace Bogey.Camera
 
         private Vector3 focusPoint;
         private Vector3 lookAtDirection;
-        private Vector3 newPosition;
+
+        UnityEngine.Camera regularCamera;
+
+        Vector3 cameraHalfExtends
+        {
+            get
+            {
+                Vector3 halfExtends;
+                halfExtends.y = regularCamera.nearClipPlane * Mathf.Tan(0.5f * Mathf.Deg2Rad * regularCamera.fieldOfView);
+                halfExtends.x = halfExtends.y * regularCamera.aspect;
+                halfExtends.z = 0f;
+
+                return halfExtends;
+            }
+            
+        }
+        
 
         private void Awake()
         {
+            regularCamera = GetComponent<UnityEngine.Camera>();
             focusPoint = focus.position;
             transform.localRotation = Quaternion.Euler(orbitAngles);
         }
@@ -37,6 +54,8 @@ namespace Bogey.Camera
         {
 
             Quaternion lookRotation;
+            Vector3 lookPosition;
+
             if(ManualRotation())
             {
                 ConstrainAngles();
@@ -48,8 +67,15 @@ namespace Bogey.Camera
             }
             focusPoint = focus.position;
             lookAtDirection = lookRotation * Vector3.forward;
-            newPosition = focusPoint - lookAtDirection * distance;
-            transform.position = newPosition;
+            lookPosition = focusPoint - lookAtDirection * distance;
+
+            if (Physics.BoxCast(focusPoint, cameraHalfExtends, -lookAtDirection, 
+                out RaycastHit hit, lookRotation, distance - regularCamera.nearClipPlane))
+            {
+                lookPosition = focusPoint - lookAtDirection * (hit.distance + regularCamera.nearClipPlane);
+            }
+
+            transform.position = lookPosition;
                 //Vector3.Slerp(transform.position, newPosition, smoothFactor);
             transform.rotation = lookRotation;
         }

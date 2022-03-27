@@ -433,13 +433,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 594609552}
-  m_LocalRotation: {x: 0.17987745, y: -0, z: -0, w: 0.98368907}
-  m_LocalPosition: {x: 0, y: 3.23, z: -5.05}
+  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
+  m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1523040322}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 20.725, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
 --- !u!114 &594609554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -452,10 +452,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5aaf359141419a4280dd7c47480f12b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerTransform: {fileID: 1111096535}
-  cameraOffset: {x: 0, y: 0, z: 0}
-  SmoothFactor: 0.3
-  LookAtPlayer: 1
+  focus: {fileID: 1111096535}
+  distance: 2.5
+  smoothFactor: 0.5
+  focusRadius: 1
+  rotationSpeed: 90
+  minVerticalAngle: 5
+  maxVerticalAngle: 60
 --- !u!81 &594609555
 AudioListener:
   m_ObjectHideFlags: 0
@@ -928,7 +931,7 @@ Rigidbody:
   m_AngularDrag: 0.6
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!135 &1111096537
@@ -1212,6 +1215,7 @@ MonoBehaviour:
   ball: {fileID: 1111096536}
   ballVelocity: 0
   isMoving: 0
+  playerInputSpace: {fileID: 594609553}
 --- !u!1 &1671851130
 GameObject:
   m_ObjectHideFlags: 0

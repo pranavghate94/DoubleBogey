@@ -38,8 +38,15 @@ namespace Bogey
 
         private void FixedUpdate()
         {
-            if (ballVelocity < 3f)
+            ballVelocity = ball.velocity.magnitude;
+
+            if (ballVelocity < 0.2)
+            {
+                //stop ball movement
+                ball.velocity = Vector3.zero;
                 isMoving = false;
+            }
+
             else
                 isMoving = true;
 
@@ -49,12 +56,12 @@ namespace Bogey
         #region Ball Controls
         public void ControlBall()
         {
-            Vector3 force = Vector3.zero;
+            
 
             if(Input.GetMouseButtonDown(0) && !isMoving)
             {
-                
-                if(playerInputSpace)
+                Vector3 force = Vector3.zero;
+                if (playerInputSpace)
                 {
 
                     Vector3 forward = playerInputSpace.forward;
