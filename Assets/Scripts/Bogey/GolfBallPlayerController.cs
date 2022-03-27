@@ -21,9 +21,9 @@ namespace Bogey
         [SerializeField] private float ballVelocity;
         [SerializeField] public bool isMoving;
 
-        private Vector3 lastPosition;
+        [SerializeField] Transform playerInputSpace = default;
 
-
+        private Vector3 lastPosition = default;
 
         void Start()
         {
@@ -38,7 +38,7 @@ namespace Bogey
 
         private void FixedUpdate()
         {
-            if (ballVelocity < 0.1f)
+            if (ballVelocity < 3f)
                 isMoving = false;
             else
                 isMoving = true;
@@ -49,14 +49,28 @@ namespace Bogey
         #region Ball Controls
         public void ControlBall()
         {
+            Vector3 force = Vector3.zero;
 
-            if(Input.GetMouseButtonDown(0))
+            if(Input.GetMouseButtonDown(0) && !isMoving)
             {
-                if (!isMoving)
+                
+                if(playerInputSpace)
                 {
-                    lastPosition = transform.position;
-                    ball.AddForce(transform.forward * shotPower * shotPowerMultiplier);
+
+                    Vector3 forward = playerInputSpace.forward;
+                    forward.y = 0f;
+                    forward.Normalize();
+
+                    force = (forward) * shotPower * shotPowerMultiplier;
                 }
+                else
+                {
+                    force = transform.forward * shotPower * shotPowerMultiplier;
+                }
+
+                lastPosition = transform.position;
+                ball.AddForce(force);
+                
             }
 
         }
