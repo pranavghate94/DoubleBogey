@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using Photon.Pun;
+
 
 /*
  * See: https://catlikecoding.com/unity/tutorials/movement/orbit-camera/
@@ -10,7 +12,7 @@ using UnityEngine;
 namespace Bogey.Camera
 {
     [RequireComponent(typeof(UnityEngine.Camera))]
-    public class MouseOrbit : MonoBehaviour
+    public class MouseOrbit : MonoBehaviourPunCallbacks
     {
         [SerializeField] Transform focus = default;
         [SerializeField, Range(1f, 20f)] float distance = 1f;
@@ -45,39 +47,27 @@ namespace Bogey.Camera
 
         private void Awake()
         {
+
+            if(!photonView.IsMine)
+            {
+                this.gameObject.SetActive(false);
+            }
+
             regularCamera = GetComponent<UnityEngine.Camera>();
             focusPoint = focus.position;
             transform.localRotation = Quaternion.Euler(orbitAngles);
+
         }
+
+
+     
 
         private void LateUpdate()
         {
-
-            Quaternion lookRotation;
-            Vector3 lookPosition;
-
-            if(ManualRotation())
+            if(photonView.IsMine)
             {
-                ConstrainAngles();
-                lookRotation = Quaternion.Euler(orbitAngles);
+                ControlCamera();
             }
-            else
-            {
-                lookRotation = transform.localRotation;
-            }
-            focusPoint = focus.position;
-            lookAtDirection = lookRotation * Vector3.forward;
-            lookPosition = focusPoint - lookAtDirection * distance;
-
-            if (Physics.BoxCast(focusPoint, cameraHalfExtends, -lookAtDirection, 
-                out RaycastHit hit, lookRotation, distance - regularCamera.nearClipPlane))
-            {
-                lookPosition = focusPoint - lookAtDirection * (hit.distance + regularCamera.nearClipPlane);
-            }
-
-            transform.position = lookPosition;
-                //Vector3.Slerp(transform.position, newPosition, smoothFactor);
-            transform.rotation = lookRotation;
         }
 
         private void OnValidate()
@@ -111,7 +101,36 @@ namespace Bogey.Camera
         }
       
 
-        
+        private void ControlCamera()
+        {
+            Quaternion lookRotation;
+            Vector3 lookPosition;
+
+            if (ManualRotation())
+            {
+                ConstrainAngles();
+                lookRotation = Quaternion.Euler(orbitAngles);
+            }
+            else
+            {
+                lookRotation = transform.localRotation;
+            }
+            focusPoint = focus.position;
+            lookAtDirection = lookRotation * Vector3.forward;
+            lookPosition = focusPoint - lookAtDirection * distance;
+
+            if (Physics.BoxCast(focusPoint, cameraHalfExtends, -lookAtDirection,
+                out RaycastHit hit, lookRotation, distance - regularCamera.nearClipPlane))
+            {
+                lookPosition = focusPoint - lookAtDirection * (hit.distance + regularCamera.nearClipPlane);
+            }
+
+            transform.position = lookPosition;
+            //Vector3.Slerp(transform.position, newPosition, smoothFactor);
+            transform.rotation = lookRotation;
+        }
+
+
     }
 
 }
